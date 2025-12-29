@@ -47,14 +47,15 @@ def predict_proba_hf(x_df: pd.DataFrame) -> float:
     score = float(model.decision_function(x_df)[0])
     return float(1.0 / (1.0 + np.exp(-score)))
 
-st.markdown("# Web-based Calculator for Discriminating Heart Failure from Pneumonia")
+st.markdown("# Online Calculator for Differentiating Heart Failure from Pneumonia")
 st.markdown(
     '<div class="subtitle">'
-    'Model-based estimates for <b>Heart Failure</b> (y=1) versus <b>Pneumonia</b> '
-    'using Age, AG, CREA, UA, RDW, and PDW.'
+    'This application provides model-based estimates for <b>Heart Failure</b> (y=1) versus <b>Pneumonia</b> '
+    'using six routinely available laboratory variables (Age, AG, CREA, UA, RDW, PDW).'
     '</div>',
     unsafe_allow_html=True
 )
+
 
 st.markdown('<div class="section-title">Inputs</div>', unsafe_allow_html=True)
 
@@ -95,3 +96,4 @@ if submitted:
         unsafe_allow_html=True
     )
     st.markdown("</div>", unsafe_allow_html=True)
+
