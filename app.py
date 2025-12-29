@@ -28,7 +28,7 @@ CUTOFF = float(config.get("youden_threshold", 0.50))
 st.markdown("""
 <style>
 /* 给顶部留更大空隙，避免被 Streamlit 顶栏遮住 */
-.block-container { max-width: 920px; padding-top: 2.2rem; padding-bottom: 0.8rem; }
+.block-container { max-width: 920px; padding-top: 2.8rem !important; padding-bottom: 0.8rem; }
 
 /* 用自定义标题，不用 markdown 的 #，避免生成锚点 id */
 .app-title { margin: 0 0 0.35rem 0; font-size: 1.65rem; line-height: 1.2; font-weight: 750; }
@@ -103,3 +103,4 @@ if submitted:
         unsafe_allow_html=True
     )
     st.markdown("</div>", unsafe_allow_html=True)
+
