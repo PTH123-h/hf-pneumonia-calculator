@@ -6,10 +6,12 @@ import streamlit as st
 
 st.set_page_config(page_title="HF vs Pneumonia Calculator", layout="centered")
 
+
 @st.cache_resource
 def load_model():
     obj = joblib.load("model.joblib")  # {"model":..., "features":[...]}
     return obj["model"], obj["features"]
+
 
 def load_json(path: str, default):
     try:
@@ -17,6 +19,7 @@ def load_json(path: str, default):
             return json.load(r)
     except Exception:
         return default
+
 
 model, FEATURES = load_model()
 config = load_json("config.json", default={})
@@ -27,8 +30,20 @@ CUTOFF = float(config.get("youden_threshold", 0.50))
 
 st.markdown("""
 <style>
-.block-container { max-width: 920px; padding-top: 0.8rem; padding-bottom: 0.8rem; }
-h1 { margin: 0 0 0.2rem 0; font-size: 1.6rem; }
+/* Layout */
+.block-container { max-width: 920px; padding-top: 1.2rem; padding-bottom: 0.8rem; }
+h1 { margin: 0 0 0.2rem 0; font-size: 1.6rem; line-height: 1.25; }
+
+/* Custom title: avoids top-cropping and supports wrapping */
+.app-title {
+  font-size: 1.65rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0.1rem 0 0.35rem 0;
+  white-space: normal;
+  word-break: break-word;
+}
+
 .subtitle { color:#555; font-size:0.95rem; line-height:1.35; margin: 0 0 0.6rem 0; }
 .section-title { font-size: 1.05rem; font-weight: 750; margin: 0.4rem 0 0.35rem 0; }
 .result-card { border:1px solid #e6e6e6; border-radius:12px; padding:12px 14px; background:#fff; margin-top: 0.6rem; }
@@ -36,6 +51,7 @@ h1 { margin: 0 0 0.2rem 0; font-size: 1.6rem; }
 hr { margin: 0.6rem 0; }
 </style>
 """, unsafe_allow_html=True)
+
 
 def predict_proba_hf(x_df: pd.DataFrame) -> float:
     if hasattr(model, "predict_proba"):
@@ -47,15 +63,19 @@ def predict_proba_hf(x_df: pd.DataFrame) -> float:
     score = float(model.decision_function(x_df)[0])
     return float(1.0 / (1.0 + np.exp(-score)))
 
-st.markdown("# Online Calculator for Differentiating Heart Failure from Pneumonia")
+
+# --- Title + subtitle (use custom HTML title to prevent cropping) ---
+st.markdown(
+    '<div class="app-title">Online Model-Based Calculator to Differentiate Heart Failure from Pneumonia</div>',
+    unsafe_allow_html=True
+)
 st.markdown(
     '<div class="subtitle">'
-    'This application provides model-based estimates for <b>Heart Failure</b> (y=1) versus <b>Pneumonia</b> '
-    'using six routinely available laboratory variables (Age, AG, CREA, UA, RDW, PDW).'
+    'Model-based estimates for <b>Heart Failure</b> (y=1) versus <b>Pneumonia</b> '
+    'using Age, AG, CREA, UA, RDW, and PDW.'
     '</div>',
     unsafe_allow_html=True
 )
-
 
 st.markdown('<div class="section-title">Inputs</div>', unsafe_allow_html=True)
 
@@ -96,4 +116,3 @@ if submitted:
         unsafe_allow_html=True
     )
     st.markdown("</div>", unsafe_allow_html=True)
-
