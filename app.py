@@ -6,12 +6,10 @@ import streamlit as st
 
 st.set_page_config(page_title="HF vs Pneumonia Calculator", layout="centered")
 
-
 @st.cache_resource
 def load_model():
     obj = joblib.load("model.joblib")  # {"model":..., "features":[...]}
     return obj["model"], obj["features"]
-
 
 def load_json(path: str, default):
     try:
@@ -19,7 +17,6 @@ def load_json(path: str, default):
             return json.load(r)
     except Exception:
         return default
-
 
 model, FEATURES = load_model()
 config = load_json("config.json", default={})
@@ -30,28 +27,19 @@ CUTOFF = float(config.get("youden_threshold", 0.50))
 
 st.markdown("""
 <style>
-/* Layout */
-.block-container { max-width: 920px; padding-top: 1.2rem; padding-bottom: 0.8rem; }
-h1 { margin: 0 0 0.2rem 0; font-size: 1.6rem; line-height: 1.25; }
+/* 给顶部留更大空隙，避免被 Streamlit 顶栏遮住 */
+.block-container { max-width: 920px; padding-top: 2.2rem; padding-bottom: 0.8rem; }
 
-/* Custom title: avoids top-cropping and supports wrapping */
-.app-title {
-  font-size: 1.65rem;
-  font-weight: 800;
-  line-height: 1.25;
-  margin: 0.1rem 0 0.35rem 0;
-  white-space: normal;
-  word-break: break-word;
-}
+/* 用自定义标题，不用 markdown 的 #，避免生成锚点 id */
+.app-title { margin: 0 0 0.35rem 0; font-size: 1.65rem; line-height: 1.2; font-weight: 750; }
+.subtitle { color:#555; font-size:0.95rem; line-height:1.35; margin: 0 0 0.9rem 0; }
 
-.subtitle { color:#555; font-size:0.95rem; line-height:1.35; margin: 0 0 0.6rem 0; }
 .section-title { font-size: 1.05rem; font-weight: 750; margin: 0.4rem 0 0.35rem 0; }
 .result-card { border:1px solid #e6e6e6; border-radius:12px; padding:12px 14px; background:#fff; margin-top: 0.6rem; }
 .small { color:#666; font-size:0.88rem; line-height:1.35; margin-top: 0.25rem; }
 hr { margin: 0.6rem 0; }
 </style>
 """, unsafe_allow_html=True)
-
 
 def predict_proba_hf(x_df: pd.DataFrame) -> float:
     if hasattr(model, "predict_proba"):
@@ -63,16 +51,15 @@ def predict_proba_hf(x_df: pd.DataFrame) -> float:
     score = float(model.decision_function(x_df)[0])
     return float(1.0 / (1.0 + np.exp(-score)))
 
-
-# --- Title + subtitle (use custom HTML title to prevent cropping) ---
+# ===== 标题（HTML，不会生成 # 锚点）=====
 st.markdown(
-    '<div class="app-title">Online Model-Based Calculator to Differentiate Heart Failure from Pneumonia</div>',
+    "<div class='app-title'>Online Model-Based Calculator to Differentiate Heart Failure from Pneumonia</div>",
     unsafe_allow_html=True
 )
 st.markdown(
     '<div class="subtitle">'
-    'Model-based estimates for <b>Heart Failure</b> (y=1) versus <b>Pneumonia</b> '
-    'using Age, AG, CREA, UA, RDW, and PDW.'
+    'This application provides model-based estimates for <b>Heart Failure</b> (y=1) versus <b>Pneumonia</b> '
+    'using six routinely available laboratory variables (Age, AG, CREA, UA, RDW, PDW).'
     '</div>',
     unsafe_allow_html=True
 )
