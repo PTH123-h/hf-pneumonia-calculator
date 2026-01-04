@@ -76,8 +76,8 @@ with st.form("hf_pna_form", clear_on_submit=False):
 
     with c2:
         ua = st.number_input("UA (µmol/L)", min_value=0.0, max_value=500000.0, value=350.0, step=1.0, format="%.0f")
-        rdw = st.number_input("RDW (%)", min_value=0.0, max_value=2000.0, value=13.5, step=0.1, format="%.1f")
-        pdw = st.number_input("PDW (fL)", min_value=0.0, max_value=2000.0, value=12.5, step=0.1, format="%.1f")
+        rdw = st.number_input("RDW (fL)", min_value=0.0, max_value=2000.0, value=13.5, step=0.1, format="%.1f")
+        pdw = st.number_input("PDW (%)", min_value=0.0, max_value=2000.0, value=12.5, step=0.1, format="%.1f")
 
     submitted = st.form_submit_button("Predict")
 
@@ -103,4 +103,5 @@ if submitted:
         unsafe_allow_html=True
     )
     st.markdown("</div>", unsafe_allow_html=True)
+
 
