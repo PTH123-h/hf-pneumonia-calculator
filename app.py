@@ -23,7 +23,6 @@ config = load_json("config.json", default={})
 
 POSITIVE_CLASS_NAME = "Heart Failure"   # y=1
 NEGATIVE_CLASS_NAME = "Pneumonia"       # y=0
-CUTOFF = float(config.get("youden_threshold", 0.50))
 
 st.markdown("""
 <style>
@@ -76,6 +75,7 @@ with st.form("hf_pna_form", clear_on_submit=False):
 
     with c2:
         ua = st.number_input("UA (µmol/L)", min_value=0.0, max_value=500000.0, value=350.0, step=1.0, format="%.0f")
+        # ✅ 按你确定的单位：RDW (fL)、PDW (%)
         rdw = st.number_input("RDW (fL)", min_value=0.0, max_value=2000.0, value=13.5, step=0.1, format="%.1f")
         pdw = st.number_input("PDW (%)", min_value=0.0, max_value=2000.0, value=12.5, step=0.1, format="%.1f")
 
@@ -88,20 +88,29 @@ if submitted:
 
     p_hf = predict_proba_hf(x)
     p_pna = 1.0 - p_hf
-    pred_label = POSITIVE_CLASS_NAME if p_hf >= CUTOFF else NEGATIVE_CLASS_NAME
+
+    # ✅ 用“概率大小”给出解释（不使用固定阈值、不写 threshold）
+    more_likely = POSITIVE_CLASS_NAME if p_hf >= p_pna else NEGATIVE_CLASS_NAME
+    prob_gap = abs(p_hf - p_pna)
 
     st.markdown('<div class="result-card">', unsafe_allow_html=True)
+
     st.markdown("**Estimated probabilities (binary)**")
     st.markdown(f"- {POSITIVE_CLASS_NAME}: **{p_hf:.2f}**")
     st.markdown(f"- {NEGATIVE_CLASS_NAME}: **{p_pna:.2f}**")
+
     st.markdown("<hr/>", unsafe_allow_html=True)
-    st.markdown(f"**Model decision (classification):** **{pred_label}**")
+
+    st.markdown(f"**Probability-based interpretation:** **{more_likely} more likely**")
     st.markdown(
         f"<div class='small'>"
-        f"Classification is based on P(HF) with a fixed threshold (t = {CUTOFF:.3f})."
+        f"Interpretation is based on the larger predicted probability (no fixed threshold applied). "
+        f"Probability difference |P(HF) − P(Pneumonia)| = {prob_gap:.2f}."
         f"</div>",
         unsafe_allow_html=True
     )
+
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
