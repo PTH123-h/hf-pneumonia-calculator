@@ -102,15 +102,9 @@ if submitted:
     st.markdown("<hr/>", unsafe_allow_html=True)
 
     st.markdown(f"**Probability-based interpretation:** **{more_likely} more likely**")
-    st.markdown(
-        f"<div class='small'>"
-        f"Interpretation is based on the larger predicted probability (no fixed threshold applied). "
-        f"Probability difference |P(HF) − P(Pneumonia)| = {prob_gap:.2f}."
-        f"</div>",
-        unsafe_allow_html=True
-    )
-
+    
     st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
